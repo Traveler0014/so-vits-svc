@@ -11,6 +11,8 @@
 5. If you distribute this repository's code or publish any results produced by this project publicly (including but not limited to video sharing platforms), please indicate the original author and code source (this repository).
 6. If you use this project for any other plan, please contact and inform the author of this repository in advance. Thank you very much.
 
+### A fork with a greatly improved interface：[34j/so-vits-svc-fork](https://github.com/34j/so-vits-svc-fork)
+
 ## Update
 
 > Updated the 4.0-v2 model, the entire process is the same as 4.0. Compared to 4.0, there is some improvement in certain scenarios, but there are also some cases where it has regressed. Please refer to the [4.0-v2 branch](https://github.com/svc-develop-team/so-vits-svc/tree/4.0-v2) for more information.
@@ -146,6 +148,8 @@ The existing steps before clustering do not need to be changed. All you need to 
   - Specify "cluster_infer_ratio" in inference_main, where 0 means not using clustering at all, 1 means only using clustering, and usually 0.5 is sufficient.
 
 ### [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1kv-3y2DmZo0uya8pEr1xk7cSB-4e_Pct?usp=sharing) [sovits4_for_colab.ipynb](https://colab.research.google.com/drive/1kv-3y2DmZo0uya8pEr1xk7cSB-4e_Pct?usp=sharing)
+
+#### [23/03/16] No longer need to download hubert manually
 
 ## Exporting to Onnx
 

@@ -11,6 +11,8 @@
 5. 如将本仓库代码二次分发，或将由此项目产出的任何结果公开发表 (包括但不限于视频网站投稿)，请注明原作者及代码来源 (此仓库)。
 6. 如果将此项目用于任何其他企划，请提前联系并告知本仓库作者，十分感谢。
 
+### 改善了交互的一个分支推荐：[34j/so-vits-svc-fork](https://github.com/34j/so-vits-svc-fork)
+
 ## update
 
 > 更新了4.0-v2模型，全部流程同4.0，相比4.0在部分场景下有一定提升，但也有些情况有退步，具体可移步[4.0-v2分支](https://github.com/svc-develop-team/so-vits-svc/tree/4.0-v2)
@@ -143,6 +145,8 @@ python inference_main.py -m "logs/44k/G_30400.pth" -c "configs/config.json" -n "
   + inference_main中指定cluster_infer_ratio，0为完全不使用聚类，1为只使用聚类，通常设置0.5即可
 
 ### [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1kv-3y2DmZo0uya8pEr1xk7cSB-4e_Pct?usp=sharing) [sovits4_for_colab.ipynb](https://colab.research.google.com/drive/1kv-3y2DmZo0uya8pEr1xk7cSB-4e_Pct?usp=sharing)
+
+#### [23/03/16] 不再需要手动下载hubert
 
 ## Onnx导出
 
