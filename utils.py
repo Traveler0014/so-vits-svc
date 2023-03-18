@@ -15,6 +15,9 @@ import torch
 from torch.nn import functional as F
 from modules.commons import sequence_mask
 from hubert import hubert_model
+
+from basic import split_path
+
 MATPLOTLIB_FLAG = False
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -278,6 +281,46 @@ def clean_checkpoints(path_to_models='logs/44k/', n_ckpts_to_keep=2, sort_by_tim
   x_sorted = lambda _x: sorted([f for f in ckpts_files if f.startswith(_x) and not f.endswith('_0.pth')], key=sort_key)
   to_del = [os.path.join(path_to_models, fn) for fn in
             (x_sorted('G')[:-n_ckpts_to_keep] + x_sorted('D')[:-n_ckpts_to_keep])]
+  del_info = lambda fn: logger.info(f".. Free up space by deleting ckpt {fn}")
+  del_routine = lambda x: [os.remove(x), del_info(x)]
+  rs = [del_routine(fn) for fn in to_del]
+
+def clean_custom_checkpoints(path_to_models='logs/44k/', n_ckpts_to_keep=2, sort_by_time=True, *, ckpts_info: str='logs/44k/checkpoints_info.json'):
+  """Freeing up space by deleting saved ckpts
+
+  Arguments:
+  path_to_models    --  Path to the model directory
+  n_ckpts_to_keep   --  Number of ckpts to keep, excluding G_0.pth and D_0.pth
+  sort_by_time      --  True -> chronologically delete ckpts
+                        False -> lexicographically delete ckpts
+  """
+  if os.path.exists(ckpts_info):
+    with open(ckpts_info, 'r', encoding='utf-8') as fp:
+      ckpts_info = json.load(fp)
+  else:
+     ckpts_info = list()
+  ckpts_files = [f for f in os.listdir(path_to_models) if os.path.isfile(os.path.join(path_to_models, f))]
+  name_key = (lambda _f: int(re.compile('._(\d+)\.pth').match(_f).group(1)))
+  time_key = (lambda _f: os.path.getmtime(os.path.join(path_to_models, _f)))
+  sort_key = time_key if sort_by_time else name_key
+  x_sorted = lambda _x: sorted([f for f in ckpts_files if f.startswith(_x) and not f.endswith('_0.pth')], key=sort_key)
+  
+  def loss_sorted(file_list: list, n: int):
+      if n > 3:
+         file_list = file_list[:-3]
+         n -= 3
+      temp_dict = dict()
+      for item in filter(lambda item: item.get('name') in file_list, ckpts_info):
+         temp_dict[item.get('name')] = item.get('loss_mel', 99)
+      get_loss = lambda x: temp_dict.get(x, 99)
+      return sorted(file_list, key=get_loss, reverse=True)[:-n]
+  
+  del_names = list()
+  del_names.extend(x_sorted('G')[:-3])
+  g_files = loss_sorted(x_sorted('G'), n_ckpts_to_keep)
+  d_files = [file.replace('G_', 'D_') for file in g_files]
+  to_del = [os.path.join(path_to_models, fn) for fn in
+            (g_files + d_files)]
   del_info = lambda fn: logger.info(f".. Free up space by deleting ckpt {fn}")
   del_routine = lambda x: [os.remove(x), del_info(x)]
   rs = [del_routine(fn) for fn in to_del]

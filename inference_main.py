@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import soundfile
 
+from basic import get_name
 from inference import infer_tool
 from inference import slicer
 from inference.infer_tool import Svc
@@ -94,7 +95,7 @@ def main():
                 audio.extend(list(infer_tool.pad_array(_audio, length)))
             key = "auto" if auto_predict_f0 else f"{tran}key"
             cluster_name = "" if cluster_infer_ratio == 0 else f"_{cluster_infer_ratio}"
-            res_path = f'./results/{clean_name}_{key}_{spk}{cluster_name}.{wav_format}'
+            res_path = f'./results/{get_name(clean_name)}_{key}_{spk}{cluster_name}_{get_name(args.model_path)}.{wav_format}'
             soundfile.write(res_path, audio, svc_model.target_sample, format=wav_format)
 
 if __name__ == '__main__':

@@ -237,6 +237,23 @@ def train_and_evaluate(rank, epoch, hps, nets, optims, schedulers, scaler, loade
                 )
 
             if global_step % hps.train.eval_interval == 0:
+                info_path = './logs/44k/checkpoints_info.json'
+                if os.path.exists(info_path):
+                    with open(info_path, 'r', encoding='utf-8') as fp:
+                        cpkts_info = json.load(fp)
+                else:
+                    cpkts_info = list()
+                loss_log = dict(name=f'G_{global_step}.pth',
+                                step=global_step,
+                                loss_disc=loss_disc.item(),
+                                loss_gen=loss_gen.item(),
+                                loss_fm=loss_fm.item(),
+                                loss_mel=loss_mel.item(),
+                                loss_kl=loss_kl.item(),
+                                loss_total=loss_gen_all.item())
+                cpkts_info.append(loss_log)
+                with open(info_path, 'w', encoding='utf-8') as fp:
+                    json.dump(cpkts_info, fp)
                 evaluate(hps, net_g, eval_loader, writer_eval)
                 utils.save_checkpoint(net_g, optim_g, hps.train.learning_rate, epoch,
                                       os.path.join(hps.model_dir, "G_{}.pth".format(global_step)))
@@ -244,7 +261,7 @@ def train_and_evaluate(rank, epoch, hps, nets, optims, schedulers, scaler, loade
                                       os.path.join(hps.model_dir, "D_{}.pth".format(global_step)))
                 keep_ckpts = getattr(hps.train, 'keep_ckpts', 0)
                 if keep_ckpts > 0:
-                    utils.clean_checkpoints(path_to_models=hps.model_dir, n_ckpts_to_keep=keep_ckpts, sort_by_time=True)
+                    utils.clean_custom_checkpoints(path_to_models=hps.model_dir, n_ckpts_to_keep=keep_ckpts, sort_by_time=True)
 
         global_step += 1
 

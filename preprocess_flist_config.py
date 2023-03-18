@@ -7,6 +7,8 @@ from random import shuffle
 import json
 import wave
 
+from basic import get_ext
+
 config_template = json.load(open("configs_template/config_template.json"))
 
 pattern = re.compile(r'^[\.a-zA-Z0-9_\/]+$')
@@ -41,7 +43,7 @@ if __name__ == "__main__":
         wavs = ["/".join([args.source_dir, speaker, i]) for i in os.listdir(os.path.join(args.source_dir, speaker))]
         new_wavs = []
         for file in wavs:
-            if not file.endswith("wav"):
+            if get_ext(file) != '.wav':
                 continue
             if not pattern.match(file):
                 print(f"warning：文件名{file}中包含非字母数字下划线，可能会导致错误。（也可能不会）")
@@ -51,9 +53,9 @@ if __name__ == "__main__":
             new_wavs.append(file)
         wavs = new_wavs
         shuffle(wavs)
-        train += wavs[2:-2]
-        val += wavs[:2]
-        test += wavs[-2:]
+        train += wavs[50:-50]
+        val += wavs[:75]
+        test += wavs[-75:]
 
     shuffle(train)
     shuffle(val)

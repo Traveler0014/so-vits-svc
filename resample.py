@@ -1,18 +1,36 @@
 import os
 import argparse
+import shutil
+import subprocess
+
 import librosa
 import numpy as np
 from multiprocessing import Pool, cpu_count
 from scipy.io import wavfile
 from tqdm import tqdm
 
+from basic import split_path, get_ext, join_path
+
+def trans_format(src_dir: str):
+    ogg_count = 0
+    for file_name in tqdm(os.listdir(src_dir)):
+        input_path = os.path.join(src_dir, file_name)
+        src_dir, name, ext = split_path(file_name)
+        # 如果是ogg文件
+        if ext == '.ogg':
+            # 获取完整的输入和输出路径
+            output_path = join_path(src_dir, name, '.wav')
+            # 执行ffmpeg命令
+            subprocess.run(['ffmpeg', '-i', input_path, output_path], capture_output=True)
+            ogg_count += 1
+    return ogg_count
 
 def process(item):
     spkdir, wav_name, args = item
     # speaker 's5', 'p280', 'p315' are excluded,
     speaker = spkdir.replace("\\", "/").split("/")[-1]
     wav_path = os.path.join(args.in_dir, speaker, wav_name)
-    if os.path.exists(wav_path) and '.wav' in wav_path:
+    if os.path.exists(wav_path) and get_ext(wav_path) == '.wav':
         os.makedirs(os.path.join(args.out_dir2, speaker), exist_ok=True)
         wav, sr = librosa.load(wav_path, sr=None)
         wav, _ = librosa.effects.trim(wav, top_db=20)
@@ -43,6 +61,7 @@ if __name__ == "__main__":
     for speaker in os.listdir(args.in_dir):
         spk_dir = os.path.join(args.in_dir, speaker)
         if os.path.isdir(spk_dir):
-            print(spk_dir)
-            for _ in tqdm(pool.imap_unordered(process, [(spk_dir, i, args) for i in os.listdir(spk_dir) if i.endswith("wav")])):
+            ogg_num = trans_format(spk_dir)
+            print(spk_dir, ogg_num)
+            for _ in tqdm(pool.imap_unordered(process, [(spk_dir, i, args) for i in os.listdir(spk_dir) if get_ext(i) == '.wav'])):
                 pass
