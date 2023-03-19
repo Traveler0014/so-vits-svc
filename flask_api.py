@@ -45,10 +45,10 @@ def voice_change_model():
 if __name__ == '__main__':
     # 启用则为直接切片合成，False为交叉淡化方式
     # vst插件调整0.3-0.5s切片时间可以降低延迟，直接切片方法会有连接处爆音、交叉淡化会有轻微重叠声音
-    # 自行选择能接受的方法，或将vst最大切片时间调整为1s，此处设为Ture，延迟大音质稳定一些
+    # 自行选择能接受的方法，或将vst最大切片时间调整为1s，此处设为True，延迟大音质稳定一些
     raw_infer = True
     # 每个模型和config是唯一对应的
-    model_name = "logs/32k/G_174000-Copy1.pth"
+    model_name = "dataset_raw/G_59200.pth"
     config_name = "configs/config.json"
     svc_model = Svc(model_name, config_name)
     svc = RealTimeVC()

@@ -15,7 +15,7 @@ def trans_format(src_dir: str):
     ogg_count = 0
     for file_name in tqdm(os.listdir(src_dir)):
         input_path = os.path.join(src_dir, file_name)
-        src_dir, name, ext = split_path(file_name)
+        src_dir, name, ext = split_path(input_path)
         # 如果是ogg文件
         if ext == '.ogg':
             # 获取完整的输入和输出路径

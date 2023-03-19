@@ -322,7 +322,12 @@ def clean_custom_checkpoints(path_to_models='logs/44k/', n_ckpts_to_keep=2, sort
   to_del = [os.path.join(path_to_models, fn) for fn in
             (g_files + d_files)]
   del_info = lambda fn: logger.info(f".. Free up space by deleting ckpt {fn}")
-  del_routine = lambda x: [os.remove(x), del_info(x)]
+  def del_routine(x):
+      try:
+        os.remove(x)
+        del_info(x)
+      except:
+        logger.info(f'.. Feleting ckpt {x} failed, skipped.') 
   rs = [del_routine(fn) for fn in to_del]
 
 def summarize(writer, global_step, scalars={}, histograms={}, images={}, audios={}, audio_sampling_rate=22050):

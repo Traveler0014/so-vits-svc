@@ -88,6 +88,10 @@
     "n_speakers": 200
   },
   "spk": {
-    "CRS": 0
+    "CRS": 0,
+    "FEI": 1,
+    "MAY": 2,
+    "OKA": 3,
+    "SUZ": 4
   }
 }
